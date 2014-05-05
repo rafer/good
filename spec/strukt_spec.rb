@@ -1,7 +1,8 @@
 require "bundler/setup"
 
 describe Strukt do
-  Person = Strukt.new(:name, :age)
+  class Person < Strukt.new(:name, :age)
+  end
 
   describe "#initialize" do
     it "accepts values via hash in the constructor" do
@@ -53,9 +54,9 @@ describe Strukt do
     end
   end
   
-  describe ".members" do
+  describe "::MEMBERS" do
     it "is the list of member variables" do
-      expect(Person.members).to eq([:name, :age])
+      expect(Person::MEMBERS).to eq([:name, :age])
     end
   end
   
@@ -63,6 +64,10 @@ describe Strukt do
     it "returns the struct as a hash" do
       person = Person.new(:name => "bob", :age => 50)
       expect(person.to_hash).to eq({:name => "bob", :age => 50})
+    end
+    
+    it "is frozen" do
+      expect { Person::MEMBERS << :height }.to raise_error(/can't modify frozen/)
     end
   end
 end
