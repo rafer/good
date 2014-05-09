@@ -1,5 +1,5 @@
 class Strukt
-  VERSION = "0.0.2"
+  VERSION = "0.0.3"
 
   include Enumerable
 
@@ -19,6 +19,14 @@ class Strukt
         other.is_a?(self.class) && to_hash == other.to_hash
       end
 
+      def eql?(other)
+        self == other
+      end
+      
+      def hash
+        to_hash.hash
+      end
+
       def to_hash
         {}.tap { |h| self.class::MEMBERS.each { |m| h[m] = send(m) } }
       end
@@ -29,3 +37,4 @@ class Strukt
     end
   end
 end
+

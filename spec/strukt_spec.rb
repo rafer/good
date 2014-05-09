@@ -53,7 +53,46 @@ describe Strukt do
       expect(bob).not_to eq(alien_bob)
     end
   end
+
+  describe "#eql" do
+    it "is true if all the parameters are ==" do
+      bob_1 = Person.new(:name => "Bob", :age => 50)
+      bob_2 = Person.new(:name => "Bob", :age => 50)
+      
+      expect(bob_1).to eql(bob_2)
+    end
+    
+    it "is false if any attributes are not #==" do
+      bob = Person.new(:name => "Bob", :age => 50)
+      ted = Person.new(:name => "Ted", :age => 50)
+      
+      expect(bob).not_to eql(ted)
+    end
+    
+    it "is false if the other object is not of the same class" do
+      bob = Person.new(:name => "Bob", :age => 50)
+      alien_bob = Struct.new(:name, :age).new("Bob", 50)
+      
+      expect(bob).not_to eql(alien_bob)
+    end
+  end
   
+  describe "#hash" do
+    it "is stable" do
+      bob_1 = Person.new(:name => "BOB")
+      bob_2 = Person.new(:name => "BOB")
+      
+      expect(bob_1.hash).to eq(bob_2.hash)
+    end
+    
+    it "varies with the parameters" do
+      bob = Person.new(:name => "Bob", :age => 50)
+      ted = Person.new(:name => "Ted", :age => 50)
+      
+      expect(bob.hash).not_to eql(ted.hash)
+    end
+  end
+
   describe "::MEMBERS" do
     it "is the list of member variables" do
       expect(Person::MEMBERS).to eq([:name, :age])
