@@ -79,8 +79,8 @@ describe Strukt do
   
   describe "#hash" do
     it "is stable" do
-      bob_1 = Person.new(:name => "BOB")
-      bob_2 = Person.new(:name => "BOB")
+      bob_1 = Person.new(:name => "Bob")
+      bob_2 = Person.new(:name => "Bob")
       
       expect(bob_1.hash).to eq(bob_2.hash)
     end
@@ -101,12 +101,28 @@ describe Strukt do
   
   describe "#to_hash" do
     it "returns the struct as a hash" do
-      person = Person.new(:name => "bob", :age => 50)
-      expect(person.to_hash).to eq({:name => "bob", :age => 50})
+      person = Person.new(:name => "Bob", :age => 50)
+      expect(person.to_hash).to eq({:name => "Bob", :age => 50})
     end
     
     it "is frozen" do
       expect { Person::MEMBERS << :height }.to raise_error(/can't modify frozen/)
+    end
+  end
+  
+  describe ".coerce" do
+    it "returns the input unmodified if it is already an instance of the struct" do
+      person = Person.new
+      expect(Person.coerce(person)).to be(person)
+    end
+    
+    it "initializes a new instance if the input is a hash" do
+      person = Person.coerce({:name => "Bob"})
+      expect(person).to eq(Person.new(:name => "Bob"))
+    end
+    
+    it "raises a TypeError otherwise" do
+      expect { Person.coerce("15 lbs of squirrel fur") }.to raise_error(TypeError)
     end
   end
 end

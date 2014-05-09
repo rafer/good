@@ -1,5 +1,5 @@
 class Strukt
-  VERSION = "0.0.3"
+  VERSION = "0.0.4"
 
   include Enumerable
 
@@ -10,6 +10,14 @@ class Strukt
       include Enumerable
       
       const_set(:MEMBERS, members.dup.freeze)
+
+      def self.coerce(coercable)
+        case coercable
+        when self then coercable
+        when Hash then new(coercable)
+        else raise TypeError, "Unable to coerce #{coercable.class} into #{self}"
+        end
+      end
       
       def initialize(params = {})
         params.each { |k, v| send("#{k}=", v) }
