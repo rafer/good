@@ -1,7 +1,13 @@
 require "bundler/setup"
 
-describe Strukt do
-  class Person < Strukt.new(:name, :age)
+shared_examples :good do
+  before do
+    class Person < described_class.new(:name, :age)
+    end
+  end
+
+  after do
+    Object.send(:remove_const, :Person)
   end
 
   describe "#initialize" do
@@ -20,17 +26,6 @@ describe Strukt do
     end
   end
 
-  describe "#each" do
-    it "is Enumerable" do
-      expect(Person.new).to be_a(Enumerable)
-    end
-  
-    it "enumerates over key-value pairs" do
-      bob = Person.new(:name => "Bob", :age => 50)
-      expect(bob.entries).to eq([[:name, "Bob"], [:age, 50]])
-    end
-  end
-  
   describe "#==" do
     it "is true if all the parameters are ==" do
       bob_1 = Person.new(:name => "Bob", :age => 50)
@@ -48,7 +43,7 @@ describe Strukt do
     
     it "is false if the other object is not of the same class" do
       bob = Person.new(:name => "Bob", :age => 50)
-      alien_bob = Struct.new(:name, :age).new("Bob", 50)
+      alien_bob = described_class.new(:name, :age).new(:name => "Bob", :age => 50)
       
       expect(bob).not_to eq(alien_bob)
     end
@@ -92,24 +87,66 @@ describe Strukt do
       expect(bob.hash).not_to eql(ted.hash)
     end
   end
-
+  
   describe "::MEMBERS" do
     it "is the list of member variables" do
       expect(Person::MEMBERS).to eq([:name, :age])
-    end
-  end
-  
-  describe "#to_hash" do
-    it "returns the struct as a hash" do
-      person = Person.new(:name => "Bob", :age => 50)
-      expect(person.to_hash).to eq({:name => "Bob", :age => 50})
     end
     
     it "is frozen" do
       expect { Person::MEMBERS << :height }.to raise_error(/can't modify frozen/)
     end
   end
-  
+ 
+  describe "#members" do
+    it "is the list of member variables" do
+      person = Person.new
+      expect(person.members).to eq([:name, :age])
+    end
+
+    it "is modifiable without affecting the original members" do
+      person = Person.new
+      person.members << :height
+      expect(person.members).to eq([:name, :age])
+    end
+  end
+
+  describe "#values" do
+    it "is the list of values (in the same order as the #members)" do
+      person = Person.new(:age => 50, :name => "BOB")
+      expect(person.values).to eq(["BOB", 50])
+    end
+  end
+
+  describe "#attributes" do
+    it "is a hash of the attributes (with symbol keys)" do
+      person = Person.new(:name => "Bob", :age => 50)
+      expect(person.attributes).to eq(:name => "Bob", :age => 50)
+    end
+  end
+
+  describe "#merge" do
+    it "returns an object with the given properties modified" do
+      young = Person.new(:name => "Bob", :age => 50)
+      old = young.merge(:age => 51)
+
+      expect(old.name).to eq("Bob")
+      expect(old.age).to eq(51)
+    end
+
+    it "does not mutate the old object" do
+      person = Person.new(:name => "Bob", :age => 50)
+      person.merge(:age => 51)
+
+      expect(person.age).to eq(50)
+    end
+
+    it "accepts 0 arguments" do
+      person = Person.new
+      expect(person.merge).not_to be(person)
+    end
+  end
+
   describe ".coerce" do
     it "returns the input unmodified if it is already an instance of the struct" do
       person = Person.new
@@ -125,4 +162,38 @@ describe Strukt do
       expect { Person.coerce("15 lbs of squirrel fur") }.to raise_error(TypeError)
     end
   end
+  
+  describe "block construction" do
+    let(:car_klass) do
+      described_class.new(:wheels) do
+        def drive
+          "Driving with all #{wheels} wheels!"
+        end
+      end
+    end
+    
+    it "allows definition of methods" do
+      car = car_klass.new(:wheels => 4)
+      expect(car.drive).to eq("Driving with all 4 wheels!")
+    end
+  end
 end
+
+describe Good::Struct do
+  include_examples(:good)
+
+  it "is mutable" do
+    person = Person.new
+    expect { person.name = "Bob" }.to change { person.name }.to("Bob")
+  end
+end
+
+describe Good::Value do
+  include_examples(:good)
+
+  it "is immutable" do
+    person = Person.new
+    expect { person.name = "Bob" }.to raise_error(NoMethodError) 
+  end
+end
+

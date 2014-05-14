@@ -1,6 +1,5 @@
 # Strukt
 
-TODO: Write a gem description
 
 ## Installation
 
@@ -16,14 +15,7 @@ Or install it yourself as:
 
     $ gem install strukt
 
-## Usage
+## Tests 
 
-TODO: Write usage instructions here
+    bundle && bundle exec rake
 
-## Contributing
-
-1. Fork it ( http://github.com/<my-github-username>/strukt/fork )
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request

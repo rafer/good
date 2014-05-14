@@ -1,14 +1,23 @@
-class Strukt
+class Good 
   VERSION = "0.0.4"
+ 
+  class Struct
+    def self.new(*members, &block)
+      Good.generate(true, *members, &block)
+    end 
+  end
 
-  include Enumerable
+  class Value 
+    def self.new(*members, &block)
+      Good.generate(false, *members, &block)
+    end 
+  end
 
-  def self.new(*members)
+  def self.generate(mutable, *members, &block)
     Class.new do
-      attr_accessor *members
-
-      include Enumerable
       
+      mutable ? attr_accessor(*members) : attr_reader(*members)
+
       const_set(:MEMBERS, members.dup.freeze)
 
       def self.coerce(coercable)
@@ -19,12 +28,32 @@ class Strukt
         end
       end
       
-      def initialize(params = {})
-        params.each { |k, v| send("#{k}=", v) }
+      define_method(:initialize) do |attributes={}|
+        if mutable
+          attributes.each { |k, v| send("#{k}=", v) }
+        else
+          attributes.each { |k, v| instance_variable_set(:"@#{k}", v) }  
+        end
+      end
+
+      def attributes 
+        {}.tap { |h| self.class::MEMBERS.each { |m| h[m] = send(m) } }
+      end
+
+      def members
+        self.class::MEMBERS.dup
+      end
+
+      def values
+        self.class::MEMBERS.map { |m| send(m) }
+      end
+
+      def merge(attributes={})
+        self.class.new(self.attributes.merge(attributes))
       end
 
       def ==(other)
-        other.is_a?(self.class) && to_hash == other.to_hash
+        other.is_a?(self.class) && attributes == other.attributes
       end
 
       def eql?(other)
@@ -32,16 +61,10 @@ class Strukt
       end
       
       def hash
-        to_hash.hash
+        attributes.hash
       end
 
-      def to_hash
-        {}.tap { |h| self.class::MEMBERS.each { |m| h[m] = send(m) } }
-      end
-
-      def each(*args, &block)
-        to_hash.each(*args, &block)
-      end
+      class_eval(&block) if block
     end
   end
 end

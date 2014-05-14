@@ -5,7 +5,7 @@ require 'strukt'
 
 Gem::Specification.new do |spec|
   spec.name          = "strukt"
-  spec.version       = Strukt::VERSION
+  spec.version       = Good::VERSION
   spec.authors       = ["Rafer Hazen"]
   spec.email         = ["rafer@ralua.com"]
   spec.summary       = %q{What Struct Should have been}
