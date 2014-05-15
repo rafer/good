@@ -1,15 +1,15 @@
 class Good 
   VERSION = "0.0.4"
- 
-  class Struct
-    def self.new(*members, &block)
-      Good.generate(true, *members, &block)
-    end 
-  end
 
   class Value 
     def self.new(*members, &block)
       Good.generate(false, *members, &block)
+    end 
+  end
+
+  class Record 
+    def self.new(*members, &block)
+      Good.generate(true, *members, &block)
     end 
   end
 

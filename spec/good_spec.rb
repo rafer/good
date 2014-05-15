@@ -179,21 +179,21 @@ shared_examples :good do
   end
 end
 
-describe Good::Struct do
-  include_examples(:good)
-
-  it "is mutable" do
-    person = Person.new
-    expect { person.name = "Bob" }.to change { person.name }.to("Bob")
-  end
-end
-
 describe Good::Value do
   include_examples(:good)
 
   it "is immutable" do
     person = Person.new
     expect { person.name = "Bob" }.to raise_error(NoMethodError) 
+  end
+end
+
+describe Good::Record do
+  include_examples(:good)
+
+  it "is mutable" do
+    person = Person.new
+    expect { person.name = "Bob" }.to change { person.name }.to("Bob")
   end
 end
 

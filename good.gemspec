@@ -1,14 +1,14 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'strukt'
+require 'good'
 
 Gem::Specification.new do |spec|
-  spec.name          = "strukt"
+  spec.name          = "good"
   spec.version       = Good::VERSION
   spec.authors       = ["Rafer Hazen"]
   spec.email         = ["rafer@ralua.com"]
-  spec.summary       = %q{What Struct Should have been}
+  spec.summary       = %q{Good::Value and Good::Record}
   spec.homepage      = ""
   spec.license       = "MIT"
 

@@ -68,12 +68,12 @@ Person < Good::Value.new(:name, :age)
 end
 ```
 
-Also, classes created with `good::value` and `good::record` have reasonable
+Also, classes created with `Good::Value` and `Good::Record` have reasonable
 implmentations of `#==`, `#eql?` and `#hash`.
 
 ## Bonus Features
 
-You can ask `Good::Value` and `Good::Record` a little about their structure.
+You can ask `Good::Value` and `Good::Record` a little about their structure:
 
 ```ruby
 person.new(:name => "Miss Brahms", :age => 30)
@@ -101,7 +101,7 @@ Person.coerce("WRONG") # => TypeError: Unable to coerce String into Person
 
 `.coerce` is particularly useful at code boundaries. It allows clients to pass
 options as a hash if they want to, while allowing you to use the type you
-expected confidently (because blatantly incorrect values raise a TypeError). 
+expected confidently (because blatantly incorrect values raise a `TypeError`). 
 
 ## Motivation
 
@@ -141,15 +141,15 @@ data they contain is truly unstructured. Since you can't add methods to hashes
 little bit of the logic to deal with these "structured" hashes gets spread
 around a lot of places.
 
-With a hash it can also be hard to fiture out exactly what it is expected to
-contain. In many cases the passing of a hash with specific requirements is an
-indication that you're missing a class.  Hopefully, prudent application of
-`Good::Value` and `Good::Record` will allow you extract that class more
-quickly, with minimal extra work.
+With a hash it can also be hard to figure out exactly what it is expected to
+contain. In many cases the passing of a hash with specific expectations about
+its contents is an indication that you're missing a class.  Hopefully, prudent
+application of `Good::Value` and `Good::Record` will allow you extract that
+class more quickly, with minimal extra work.
 
 However, this is not to say that you should not use a hash at the boundary
 between client and library, or between various modules in your system. For
-example, say we've got an Authenticator class that takes a user's credentials:
+example, say we've got an `Authenticator` class that takes a user's credentials:
 
 ```ruby
 class Authenticator
@@ -197,7 +197,7 @@ another component (to log the attempt, for example), we are now in the enviable
 position of having an object, with a well defined interface to pass around -
 not a hash with implicit assumptions about its contents. Further, because of
 the `.coerce` method we can now accept a hash at the boundary or a fully formed
-Credentials object, it makes no difference to the Authenticator.
+`Credentials` object, it makes no difference to the `Authenticator`.
 
 This evolulution seems fairly common. To solve an immediate problem, a new
 `Good::Value` class is created inside the namespace of an existing class, which
@@ -211,7 +211,7 @@ start with a hash, it can be harder to spot the "missing" class.
 
 Add this line to your application's Gemfile:
 
-    gem 'strukt'
+    gem 'good'
 
 And then execute:
 
@@ -219,7 +219,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install strukt
+    $ gem install good
 
 ## Tests 
 
