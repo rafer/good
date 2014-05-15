@@ -2,14 +2,21 @@
 
 2 little things that make writing good Ruby programs a little easier.
 
-1. `Good::Value` is a class-generator for simple, pleasant [Value objects](http://en.wikipedia.org/wiki/Value_object).
+1. `Good::Value` is a class generator for simple, pleasant [Value objects](http://en.wikipedia.org/wiki/Value_object).
 
-2. `Good::Record` is a class-generator for simple, pleasant [Record objects](http://en.wikipedia.org/wiki/Record_(computer_science) "Record Objects"). They're alot like `Structs`.
+2. `Good::Record` is a class generator for simple, pleasant [Record objects](http://en.wikipedia.org/wiki/Record_(computer_science) "Record Objects"). They're a lot like `Struct`.
 
 Both are used the same way same way, like this:
 
 ```ruby
 class Person < Good::Value.new(:name, :age)
+end
+```
+
+or like this if you prefer:
+
+```ruby
+Person = Good::Value.new(:name, :age)
 end
 ```
 
