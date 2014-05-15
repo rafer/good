@@ -2,11 +2,11 @@
 
 2 little things that make writing good Ruby programs a little easier.
 
-1. `Good::Value` is a class generator for simple, pleasant [Value objects](http://en.wikipedia.org/wiki/Value_object).
+1. `Good::Value` is a class generator for simple, pleasant, immutable [Value objects](http://en.wikipedia.org/wiki/Value_object).
 
-2. `Good::Record` is a class generator for simple, pleasant [Record objects](http://en.wikipedia.org/wiki/Record_(computer_science) "Record Objects"). They're a lot like `Struct`.
+2. `Good::Record` is a class generator for simple, pleasant, mutable [Record objects](http://en.wikipedia.org/wiki/Record_(computer_science) "Record Objects"). They're a lot like `Struct`.
 
-Both are used the same way same way, like this:
+Both are used the same way, like this:
 
 ```ruby
 class Person < Good::Value.new(:name, :age)
@@ -17,7 +17,6 @@ or like this if you prefer:
 
 ```ruby
 Person = Good::Value.new(:name, :age)
-end
 ```
 
 Now, we can create a `Person`:
@@ -64,11 +63,21 @@ person.age # => 30
 
 Except for mutability `Good::Value` and `Good::Record` have the same interface.
 
-Don't forget, `Good::Value` and `Good::Record` are just regular Ruby objects,
-so they get to have methods just like everybody else:
+Don't forget, `Good::Value` and `Good::Record` create regular Ruby classes so
+they get to have methods just like everybody else:
 
 ```ruby
-Person < Good::Value.new(:name, :age)
+class Person < Good::Value.new(:name, :age)
+  def introduction 
+    "My name is #{name} and I'm #{age} years old"
+  end
+end
+```
+
+or, via block:
+
+```ruby
+Person = Good::Value.new(:name, :age) do
   def introduction 
     "My name is #{name} and I'm #{age} years old"
   end
@@ -76,14 +85,15 @@ end
 ```
 
 Also, classes created with `Good::Value` and `Good::Record` have reasonable
-implmentations of `#==`, `#eql?` and `#hash`.
+implementations of `#==`, `#eql?` and `#hash`.
 
 ## Bonus Features
 
-You can ask `Good::Value` and `Good::Record` a little about their structure:
+You can ask `Good::Value` and `Good::Record` instances about their structure
+and contents:
 
 ```ruby
-person.new(:name => "Miss Brahms", :age => 30)
+person = Person.new(:name => "Miss Brahms", :age => 30)
 
 Person::MEMBERS   # => [:name, :age]
 person.members    # => [:name, :age]
@@ -91,7 +101,7 @@ person.values     # => ["Miss Brahms", 30]
 person.attributes # => {:name => "Miss Mrahms", :age => 30}
 ```
 
-You can call `Person.coerce` to coerce input to a `Person` in the follwoing
+You can call `Person.coerce` to coerce input to a `Person` in the following
 ways:
 
 ```ruby
@@ -134,7 +144,7 @@ a number of these classes, the boilerplate code gets heavy pretty quickly. Plus
 you'll probably do it wrong the first time (I certainly did).
 
 It's worth noting that `Good` in no way seeks to become the foundation of your
-domain model. The second a class outgrows it's `Good::Value` or `Good::Record`
+domain model. The second a class outgrows its `Good::Value` or `Good::Record`
 roots, by all means you should remove `Good` from the picture and rely on pure
 Ruby classes instead. `Good` helps you get started quickly by making a
 particular pattern easy, but when your classes get more mature, it's time for
@@ -166,7 +176,7 @@ class Authenticator
   end
 
   def authentic?
-    ...
+    # ...
   end
 end
 ```
@@ -194,22 +204,22 @@ class Authenticator
   end
 
   def authentic?
-    ...
+    # ...
   end
 end
 ```
 
-Say now that the the Authenticator needs to pass the user's credentials to
+Say now that the Authenticator needs to pass the user's credentials to
 another component (to log the attempt, for example), we are now in the enviable
 position of having an object, with a well defined interface to pass around -
 not a hash with implicit assumptions about its contents. Further, because of
 the `.coerce` method we can now accept a hash at the boundary or a fully formed
 `Credentials` object, it makes no difference to the `Authenticator`.
 
-This evolulution seems fairly common. To solve an immediate problem, a new
+This evolution seems fairly common. To solve an immediate problem, a new
 `Good::Value` class is created inside the namespace of an existing class, which
 is at first desirable because it does not inflict this abstraction externally.
-Then, as the class begins to interact with other compontents in the system,
+Then, as the class begins to interact with other components in the system,
 this previously internal class can be made external and evolved into it's own
 fully fledged domain object (perhaps shedding `Good` in the process). When you
 start with a hash, it can be harder to spot the "missing" class.
@@ -231,4 +241,8 @@ Or install it yourself as:
 ## Tests 
 
     bundle && bundle exec rake
+
+## Credits
+
+* Borrowed heavily from https://github.com/tcrayford/Values
 
