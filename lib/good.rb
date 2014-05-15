@@ -1,5 +1,5 @@
 class Good 
-  VERSION = "0.0.4"
+  VERSION = "0.1.0"
 
   class Value 
     def self.new(*members, &block)
