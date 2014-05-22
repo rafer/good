@@ -1,5 +1,5 @@
 class Good 
-  VERSION = "0.1.0"
+  VERSION = "0.1.1"
 
   class Value 
     def self.new(*members, &block)
@@ -15,7 +15,6 @@ class Good
 
   def self.generate(mutable, *members, &block)
     Class.new do
-      
       mutable ? attr_accessor(*members) : attr_reader(*members)
 
       const_set(:MEMBERS, members.dup.freeze)
@@ -27,16 +26,19 @@ class Good
         else raise TypeError, "Unable to coerce #{coercable.class} into #{self}"
         end
       end
-      
-      define_method(:initialize) do |attributes={}|
-        if mutable
+
+      if mutable
+        def initialize(attributes = {})
           attributes.each { |k, v| send("#{k}=", v) }
-        else
-          attributes.each { |k, v| instance_variable_set(:"@#{k}", v) }  
+        end
+      else
+        def initialize(attributes = {})
+          attributes.each { |k, v| instance_variable_set(:"@#{k}", v) }
         end
       end
 
-      def attributes 
+
+      def attributes
         {}.tap { |h| self.class::MEMBERS.each { |m| h[m] = send(m) } }
       end
 
@@ -59,7 +61,7 @@ class Good
       def eql?(other)
         self == other
       end
-      
+
       def hash
         attributes.hash
       end

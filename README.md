@@ -6,6 +6,8 @@
 
 2. `Good::Record` is a class generator for simple, pleasant, mutable [Record objects](http://en.wikipedia.org/wiki/Record_(computer_science) "Record Objects"). They're a lot like `Struct`.
 
+## Usage
+
 Both are used the same way, like this:
 
 ```ruby
