@@ -1,16 +1,16 @@
-class Good 
+class Good
   VERSION = "0.1.1"
 
-  class Value 
+  class Value
     def self.new(*members, &block)
       Good.generate(false, *members, &block)
-    end 
+    end
   end
 
-  class Record 
+  class Record
     def self.new(*members, &block)
       Good.generate(true, *members, &block)
-    end 
+    end
   end
 
   def self.generate(mutable, *members, &block)
