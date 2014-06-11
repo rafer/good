@@ -15,7 +15,7 @@ class Good
 
   def self.validate_constructor_attributes(attributes, allowed)
     if (unrecognized = attributes.keys.map(&:to_sym) - allowed).any?
-      raise ArgumentError, "Unrecognized paramter(s): #{unrecognized.join(', ')}"
+      raise ArgumentError, "Unrecognized parameter(s): #{unrecognized.join(', ')}"
     end
   end
 
