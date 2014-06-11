@@ -1,5 +1,5 @@
 class Good
-  VERSION = "0.1.1"
+  VERSION = "0.1.2"
 
   class Value
     def self.new(*members, &block)
@@ -13,11 +13,17 @@ class Good
     end
   end
 
+  def self.validate_constructor_attributes(attributes, allowed)
+    if (unrecognized = attributes.keys.map(&:to_sym) - allowed).any?
+      raise ArgumentError, "Unrecognized paramter(s): #{unrecognized.join(', ')}"
+    end
+  end
+
   def self.generate(mutable, *members, &block)
     Class.new do
       mutable ? attr_accessor(*members) : attr_reader(*members)
 
-      const_set(:MEMBERS, members.dup.freeze)
+      const_set(:MEMBERS, members.map(&:to_sym).freeze)
 
       def self.coerce(coercable)
         case coercable
@@ -27,16 +33,18 @@ class Good
         end
       end
 
+
       if mutable
         def initialize(attributes = {})
+          Good.validate_constructor_attributes(attributes, self.class::MEMBERS)
           attributes.each { |k, v| send("#{k}=", v) }
         end
       else
         def initialize(attributes = {})
+          Good.validate_constructor_attributes(attributes, self.class::MEMBERS)
           attributes.each { |k, v| instance_variable_set(:"@#{k}", v) }
         end
       end
-
 
       def attributes
         {}.tap { |h| self.class::MEMBERS.each { |m| h[m] = send(m) } }

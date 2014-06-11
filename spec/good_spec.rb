@@ -24,27 +24,31 @@ shared_examples :good do
     it "allows 0 argument construction" do
       person = Person.new
     end
+
+    it "raises an ArgumentError if given an unrecognized parameter" do
+      expect { Person.new(:wrong => nil) }.to raise_error(ArgumentError)
+    end
   end
 
   describe "#==" do
     it "is true if all the parameters are ==" do
       bob_1 = Person.new(:name => "Bob", :age => 50)
       bob_2 = Person.new(:name => "Bob", :age => 50)
-      
+
       expect(bob_1).to eq(bob_2)
     end
-    
+
     it "is false if any attributes are not #==" do
       bob = Person.new(:name => "Bob", :age => 50)
       ted = Person.new(:name => "Ted", :age => 50)
-      
+
       expect(bob).not_to eq(ted)
     end
-    
+
     it "is false if the other object is not of the same class" do
       bob = Person.new(:name => "Bob", :age => 50)
       alien_bob = described_class.new(:name, :age).new(:name => "Bob", :age => 50)
-      
+
       expect(bob).not_to eq(alien_bob)
     end
   end
@@ -53,51 +57,56 @@ shared_examples :good do
     it "is true if all the parameters are ==" do
       bob_1 = Person.new(:name => "Bob", :age => 50)
       bob_2 = Person.new(:name => "Bob", :age => 50)
-      
+
       expect(bob_1).to eql(bob_2)
     end
-    
+
     it "is false if any attributes are not #==" do
       bob = Person.new(:name => "Bob", :age => 50)
       ted = Person.new(:name => "Ted", :age => 50)
-      
+
       expect(bob).not_to eql(ted)
     end
-    
+
     it "is false if the other object is not of the same class" do
       bob = Person.new(:name => "Bob", :age => 50)
       alien_bob = Struct.new(:name, :age).new("Bob", 50)
-      
+
       expect(bob).not_to eql(alien_bob)
     end
   end
-  
+
   describe "#hash" do
     it "is stable" do
       bob_1 = Person.new(:name => "Bob")
       bob_2 = Person.new(:name => "Bob")
-      
+
       expect(bob_1.hash).to eq(bob_2.hash)
     end
-    
+
     it "varies with the parameters" do
       bob = Person.new(:name => "Bob", :age => 50)
       ted = Person.new(:name => "Ted", :age => 50)
-      
+
       expect(bob.hash).not_to eql(ted.hash)
     end
   end
-  
+
   describe "::MEMBERS" do
     it "is the list of member variables" do
       expect(Person::MEMBERS).to eq([:name, :age])
     end
-    
+
     it "is frozen" do
       expect { Person::MEMBERS << :height }.to raise_error(/can't modify frozen/)
     end
+
+    it "always contains symbols (even if defined with strings)" do
+      klass = described_class.new("a", :b)
+      expect(klass::MEMBERS).to eq([:a, :b])
+    end
   end
- 
+
   describe "#members" do
     it "is the list of member variables" do
       person = Person.new
@@ -152,17 +161,17 @@ shared_examples :good do
       person = Person.new
       expect(Person.coerce(person)).to be(person)
     end
-    
+
     it "initializes a new instance if the input is a hash" do
       person = Person.coerce({:name => "Bob"})
       expect(person).to eq(Person.new(:name => "Bob"))
     end
-    
+
     it "raises a TypeError otherwise" do
       expect { Person.coerce("15 lbs of squirrel fur") }.to raise_error(TypeError)
     end
   end
-  
+
   describe "block construction" do
     let(:car_klass) do
       described_class.new(:wheels) do
@@ -171,7 +180,7 @@ shared_examples :good do
         end
       end
     end
-    
+
     it "allows definition of methods" do
       car = car_klass.new(:wheels => 4)
       expect(car.drive).to eq("Driving with all 4 wheels!")
@@ -184,7 +193,7 @@ describe Good::Value do
 
   it "is immutable" do
     person = Person.new
-    expect { person.name = "Bob" }.to raise_error(NoMethodError) 
+    expect { person.name = "Bob" }.to raise_error(NoMethodError)
   end
 end
 
@@ -196,4 +205,3 @@ describe Good::Record do
     expect { person.name = "Bob" }.to change { person.name }.to("Bob")
   end
 end
-
