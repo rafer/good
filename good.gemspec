@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Rafer Hazen"]
   spec.email         = ["rafer@ralua.com"]
   spec.summary       = %q{Good::Value and Good::Record}
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/rafer/good"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
