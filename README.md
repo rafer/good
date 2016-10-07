@@ -100,7 +100,7 @@ person = Person.new(:name => "Miss Brahms", :age => 30)
 Person::MEMBERS   # => [:name, :age]
 person.members    # => [:name, :age]
 person.values     # => ["Miss Brahms", 30]
-person.attributes # => {:name => "Miss Mrahms", :age => 30}
+person.attributes # => {:name => "Miss Brahms", :age => 30}
 ```
 
 You can call `Person.coerce` to coerce input to a `Person` in the following
